@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ZenRouter documentation — quickstart guides for Claude Code, Codex CLI, the OpenAI SDK and cURL, plus billing and compatibility notes.">
+<title>Docs — ZenRouter</title>
+<style>
+  :root{
+    --paper:#FAFAF7; --ink:#1C1C1A; --muted:#6B6B66; --line:#E7E5E0;
+    --accent:#4F46E5; --accent-soft:#EEF0FE; --card:#FFFFFF; --code-bg:#16161A; --code-ink:#E6E6EB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);line-height:1.7;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px}
+  nav{position:sticky;top:0;background:rgba(250,250,247,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1060px;margin:0 auto;padding:0 24px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:var(--ink)}
+  .logo-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-size:16px}
+  .nav-links{display:flex;align-items:center;gap:26px;font-size:14.5px;color:var(--muted)}
+  .nav-links a{color:var(--muted)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-block;padding:9px 18px;border-radius:10px;font-size:14.5px;font-weight:600;background:var(--accent);color:#fff}
+  main{padding:56px 0 80px}
+  h1{font-size:36px;letter-spacing:-.02em;margin-bottom:6px}
+  .lede{color:var(--muted);font-size:16px;margin-bottom:40px}
+  h2{font-size:24px;margin:48px 0 14px;padding-top:18px;border-top:1px solid var(--line)}
+  h3{font-size:17px;margin:26px 0 10px}
+  p,li{font-size:15px;color:#3A3A36}
+  ul,ol{padding-left:22px;margin:10px 0}
+  code{background:var(--accent-soft);border-radius:6px;padding:2px 6px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .code-card{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:18px 20px;margin:14px 0;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.7;overflow-x:auto}
+  .code-card .c{color:#8B8B95}.code-card .g{color:#7EE787}.code-card .b{color:#79C0FF}
+  .note{background:var(--accent-soft);border:1px solid #D8DCFB;border-radius:12px;padding:14px 18px;font-size:14px;margin:16px 0;color:#3A3A56}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+  th{background:var(--card)}
+  footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:14px;text-align:center}
+  footer a{color:var(--muted);margin:0 10px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="index.html"><span class="logo-mark">Z</span>ZenRouter</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#pricing">Pricing</a>
+      <a href="https://api.zenrouter.io">Dashboard</a>
+      <a href="https://api.zenrouter.io" class="btn">Sign in</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <h1>Documentation</h1>
+  <p class="lede">Everything you need to route your first request through ZenRouter. 从零接入 ZenRouter 的完整指南。</p>
+
+  <h2 id="getting-a-key">1. Get an API key · 获取 API Key</h2>
+  <ol>
+    <li>Sign up at <a href="https://api.zenrouter.io">api.zenrouter.io</a> and verify your email.</li>
+    <li>Buy a credit pack on the <strong>Top-up</strong> page (one-time purchase, never recurring).</li>
+    <li>Open <strong>API Keys</strong> in the console and create a key. Keep it secret — it spends your balance.</li>
+  </ol>
+
+  <h2 id="base-url">2. The only change you need: base URL</h2>
+  <p>ZenRouter exposes an OpenAI-compatible surface. Any client that lets you change the base URL works as-is:</p>
+  <table>
+    <tr><th>Client type</th><th>Setting</th><th>Value</th></tr>
+    <tr><td>OpenAI-style SDKs &amp; tools</td><td><code>base_url</code> / <code>OPENAI_BASE_URL</code></td><td><code>https://api.zenrouter.io/v1</code></td></tr>
+    <tr><td>Anthropic-style tools (Claude Code)</td><td><code>ANTHROPIC_BASE_URL</code></td><td><code>https://api.zenrouter.io</code></td></tr>
+  </table>
+
+  <h2 id="claude-code">3. Claude Code</h2>
+  <div class="code-card">
+<pre><span class="c"># Add to ~/.zshrc or ~/.bashrc, then restart your shell</span>
+export ANTHROPIC_BASE_URL=<span class="g">https://api.zenrouter.io</span>
+export ANTHROPIC_AUTH_TOKEN=<span class="g">your-zenrouter-key</span>
+
+claude</pre>
+  </div>
+  <p>Claude Code now sends all model traffic through your ZenRouter balance. To switch back, remove the two variables.</p>
+
+  <h2 id="codex">4. Codex CLI</h2>
+  <div class="code-card">
+<pre><span class="c"># ~/.codex/config.toml</span>
+model = <span class="g">"gpt-5.5"</span>
+model_provider = <span class="g">"zenrouter"</span>
+
+[model_providers.zenrouter]
+name = <span class="g">"ZenRouter"</span>
+base_url = <span class="g">"https://api.zenrouter.io/v1"</span>
+env_key = <span class="g">"ZENROUTER_API_KEY"</span></pre>
+  </div>
+  <div class="code-card">
+<pre>export ZENROUTER_API_KEY=<span class="g">your-zenrouter-key</span>
+codex</pre>
+  </div>
+
+  <h2 id="openai-sdk">5. OpenAI SDK (Python / Node)</h2>
+  <div class="code-card">
+<pre><span class="c"># Python — pip install openai</span>
+from openai import OpenAI
+
+client = OpenAI(
+    base_url=<span class="g">"https://api.zenrouter.io/v1"</span>,
+    api_key=<span class="g">"your-zenrouter-key"</span>,
+)
+resp = client.chat.completions.create(
+    model=<span class="b">"claude-sonnet-4-6"</span>,
+    messages=[{<span class="g">"role"</span>: <span class="g">"user"</span>, <span class="g">"content"</span>: <span class="g">"Hello"</span>}],
+)
+print(resp.choices[0].message.content)</pre>
+  </div>
+  <div class="code-card">
+<pre><span class="c">// Node — npm install openai</span>
+import OpenAI from <span class="g">"openai"</span>;
+
+const client = new OpenAI({
+  baseURL: <span class="g">"https://api.zenrouter.io/v1"</span>,
+  apiKey: process.env.ZENROUTER_API_KEY,
+});</pre>
+  </div>
+
+  <h2 id="curl">6. cURL</h2>
+  <div class="code-card">
+<pre>curl https://api.zenrouter.io/v1/chat/completions \
+  -H <span class="g">"Authorization: Bearer $ZENROUTER_API_KEY"</span> \
+  -H <span class="g">"Content-Type: application/json"</span> \
+  -d <span class="b">'{
+    "model": "deepseek-chat",
+    "messages": [{"role": "user", "content": "你好"}],
+    "stream": true
+  }'</span></pre>
+  </div>
+
+  <h2 id="models">7. Models &amp; routing · 模型与路由</h2>
+  <p>Use the model IDs listed in your dashboard (<strong>Models</strong> page) — they follow each provider's familiar naming. Requests are routed across redundant upstream channels; if one channel degrades, traffic fails over automatically.</p>
+  <div class="note">The available model list and per-token rates are maintained live in the console and may change as providers ship new models. 模型列表与单价以控制台实时数据为准。</div>
+
+  <h2 id="billing">8. Billing · 计费说明</h2>
+  <ul>
+    <li><strong>Prepaid credits.</strong> You buy a credit pack once; there is no subscription and no automatic charge.</li>
+    <li><strong>Per-token metering.</strong> Each request deducts credits based on input + output tokens at the per-model rate shown in the console.</li>
+    <li><strong>Full audit trail.</strong> Every request appears in your usage log with token counts and cost.</li>
+    <li><strong>Spend controls.</strong> Set per-key quotas to cap how much any single key can spend.</li>
+    <li><strong>Refunds.</strong> Unused credits are refundable within 7 days of purchase — see the <a href="refund.html">Refund Policy</a>.</li>
+  </ul>
+
+  <h2 id="help">9. Getting help</h2>
+  <p>Email <a href="mailto:support@zenrouter.io">support@zenrouter.io</a> — we answer billing and technical questions within 2 business days.</p>
+</main>
+
+<footer>
+  <a href="index.html">Home</a>·<a href="terms.html">Terms</a>·<a href="privacy.html">Privacy</a>·<a href="refund.html">Refund</a>
+  <div style="margin-top:10px">© 2026 ZenRouter. All rights reserved.</div>
+</footer>
+
+</body>
+</html>

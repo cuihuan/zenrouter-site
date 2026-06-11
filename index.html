@@ -1,437 +1,347 @@
 <!DOCTYPE html>
-<!--
-  ============================================================
-  PLACEHOLDER NOTICE — REPLACE BEFORE GOING LIVE:
-  - Brand name "ZenRouter" is a placeholder.
-    Replace with the official brand name / registered company entity.
-  - ZenRouter      -> registered company legal name
-  - support@zenrouter.io   -> real support email address
-  - https://zenrouter.io   -> production domain (also update policy page links)
-  ============================================================
--->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="ZenRouter — one OpenAI-compatible API for every major LLM. Multi-model routing, usage-based billing, 99.9% uptime.">
-<title>ZenRouter — One API for Every LLM</title>
+<meta name="description" content="ZenRouter — one OpenAI-compatible API key for every top LLM. Usage-based prepaid credits, multi-provider failover, no subscription.">
+<title>ZenRouter — One API Key. Every Top Model.</title>
 <style>
-  :root {
-    --dark: #0b1120;
-    --dark-2: #111a2e;
-    --accent: #4f7cff;
-    --accent-hover: #3b66e8;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --muted-light: #9aa7bd;
-    --bg: #f7f9fc;
-    --card: #ffffff;
-    --border: #e5e9f0;
-    --radius: 12px;
+  :root{
+    --paper:#FAFAF7; --ink:#1C1C1A; --muted:#6B6B66; --line:#E7E5E0;
+    --accent:#4F46E5; --accent-soft:#EEF0FE; --card:#FFFFFF; --code-bg:#16161A; --code-ink:#E6E6EB;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-    color: var(--text);
-    background: var(--bg);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);line-height:1.65;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+  /* nav */
+  nav{position:sticky;top:0;background:rgba(250,250,247,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
+  .logo-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-size:16px}
+  .nav-links{display:flex;align-items:center;gap:26px;font-size:14.5px;color:var(--muted)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-block;padding:9px 18px;border-radius:10px;font-size:14.5px;font-weight:600;transition:.15s}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{opacity:.88}
+  .btn-ghost{border:1px solid var(--line);background:var(--card)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+  /* hero */
+  header.hero{padding:88px 0 64px;text-align:center}
+  .hero h1{font-size:clamp(32px,5vw,52px);line-height:1.15;letter-spacing:-.02em;font-weight:800}
+  .hero h1 em{color:var(--accent);font-style:normal}
+  .hero .sub{margin:18px auto 8px;max-width:640px;font-size:18px;color:var(--muted)}
+  .hero .sub-zh{font-size:15px;color:var(--muted);opacity:.85}
+  .hero-cta{margin:30px 0 44px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .code-card{max-width:680px;margin:0 auto;text-align:left;background:var(--code-bg);color:var(--code-ink);
+    border-radius:14px;padding:22px 24px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13.5px;line-height:1.7;overflow-x:auto;box-shadow:0 12px 40px rgba(28,28,26,.12)}
+  .code-card .c{color:#8B8B95}.code-card .g{color:#7EE787}.code-card .b{color:#79C0FF}
+  /* sections */
+  section{padding:64px 0;border-top:1px solid var(--line)}
+  .sec-head{text-align:center;margin-bottom:40px}
+  .sec-head h2{font-size:30px;letter-spacing:-.01em}
+  .sec-head p{color:var(--muted);margin-top:8px}
+  /* tabs */
+  .tabs{max-width:760px;margin:0 auto}
+  .tab-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}
+  .tab-btn{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:14px;cursor:pointer;color:var(--muted)}
+  .tab-btn.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+  .tab-panel{display:none}
+  .tab-panel.active{display:block}
+  .steps{margin-top:14px;color:var(--muted);font-size:14px;padding-left:20px}
+  .steps li{margin:4px 0}
+  .steps a{color:var(--accent)}
+  /* models */
+  .model-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:820px;margin:0 auto}
+  .model-chip{padding:10px 20px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:14.5px;font-weight:600}
+  .model-chip small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+  .model-note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:22px}
+  /* features */
+  .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px}
+  .card .ico{display:inline-flex;width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+    align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
+  .card h3{font-size:17px;margin-bottom:8px}
+  .card p{font-size:14px;color:var(--muted)}
+  /* pricing */
+  .price-note{text-align:center;max-width:560px;margin:0 auto 36px;color:var(--muted);font-size:14.5px}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;max-width:860px;margin:0 auto}
+  .tier{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px;text-align:center;position:relative}
+  .tier.hot{border-color:var(--accent);box-shadow:0 8px 28px rgba(79,70,229,.10)}
+  .tier .tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;
+    font-size:12px;font-weight:600;padding:3px 12px;border-radius:99px}
+  .tier h3{font-size:16px;color:var(--muted);font-weight:600}
+  .tier .price{font-size:40px;font-weight:800;margin:10px 0 2px}
+  .tier .price small{font-size:14px;color:var(--muted);font-weight:400}
+  .tier ul{list-style:none;margin:18px 0 22px;font-size:14px;color:var(--muted)}
+  .tier ul li{padding:5px 0}
+  /* faq */
+  .faq{max-width:720px;margin:0 auto}
+  .faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:12px}
+  .faq summary{font-weight:600;cursor:pointer;font-size:15.5px}
+  .faq p{margin-top:10px;color:var(--muted);font-size:14.5px}
+  .faq a{color:var(--accent)}
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:44px 0;color:var(--muted);font-size:14px}
+  .foot-inner{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+  .foot-links{display:flex;gap:20px}
+  .foot-links a:hover{color:var(--ink)}
+  @media (max-width:720px){
+    .nav-links{gap:14px}.nav-links .hide-m{display:none}
+    header.hero{padding:56px 0 44px}
   }
-  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  /* ===== Nav ===== */
-  nav {
-    background: var(--dark);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .nav-inner {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 24px; max-width: 1080px; margin: 0 auto;
-  }
-  .logo {
-    color: #fff; font-weight: 700; font-size: 1.15rem; letter-spacing: 0.2px;
-    display: flex; align-items: center; gap: 9px;
-  }
-  .logo-mark {
-    width: 26px; height: 26px; border-radius: 7px;
-    background: linear-gradient(135deg, #4f7cff, #8b5cf6);
-    display: inline-flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 0.85rem; font-weight: 800;
-  }
-  .nav-links { display: flex; gap: 26px; align-items: center; }
-  .nav-links a { color: var(--muted-light); font-size: 0.92rem; }
-  .nav-links a:hover { color: #fff; text-decoration: none; }
-  .nav-cta {
-    background: var(--accent); color: #fff !important; padding: 8px 18px;
-    border-radius: 8px; font-weight: 600;
-  }
-  .nav-cta:hover { background: var(--accent-hover); }
-  @media (max-width: 640px) { .nav-links a:not(.nav-cta) { display: none; } }
-
-  /* ===== Hero ===== */
-  .hero {
-    background: radial-gradient(ellipse 80% 60% at 50% -10%, #1d2c52 0%, var(--dark) 60%);
-    color: #fff; text-align: center; padding: 92px 24px 100px;
-  }
-  .hero .badge {
-    display: inline-block; font-size: 0.8rem; color: #a8bcff;
-    border: 1px solid rgba(79,124,255,0.45); background: rgba(79,124,255,0.12);
-    padding: 5px 14px; border-radius: 999px; margin-bottom: 26px; letter-spacing: 0.3px;
-  }
-  .hero h1 {
-    font-size: clamp(2rem, 5.5vw, 3.4rem); font-weight: 800;
-    line-height: 1.15; max-width: 800px; margin: 0 auto 14px;
-    letter-spacing: -0.5px;
-  }
-  .hero h1 span { color: var(--accent); }
-  .hero .sub-zh {
-    color: var(--muted-light); font-size: 1.02rem; margin-bottom: 10px;
-  }
-  .hero p.lead {
-    color: #c2cce0; font-size: 1.15rem; max-width: 640px; margin: 0 auto 38px;
-  }
-  .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-  .btn {
-    display: inline-block; padding: 13px 30px; border-radius: 10px;
-    font-weight: 600; font-size: 1rem; transition: all 0.15s ease;
-  }
-  .btn:hover { text-decoration: none; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-  .btn-ghost { border: 1px solid rgba(255,255,255,0.25); color: #e2e8f5; }
-  .btn-ghost:hover { border-color: rgba(255,255,255,0.55); }
-  .hero-code {
-    margin: 56px auto 0; max-width: 620px; text-align: left;
-    background: #0d1526; border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--radius); overflow: hidden;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
-  }
-  .hero-code .bar {
-    display: flex; gap: 7px; padding: 11px 14px;
-    background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.07);
-  }
-  .hero-code .dot { width: 11px; height: 11px; border-radius: 50%; background: #2c3a57; }
-  .hero-code pre {
-    padding: 18px 20px; font-family: "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.82rem; line-height: 1.65; color: #c6d3ee; overflow-x: auto;
-  }
-  .hero-code .c-green { color: #7ee2a8; }
-  .hero-code .c-blue { color: #82aaff; }
-  .hero-code .c-grey { color: #5b6b8c; }
-
-  /* ===== Sections ===== */
-  section { padding: 84px 0; }
-  .section-head { text-align: center; max-width: 620px; margin: 0 auto 52px; }
-  .section-head h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 8px; }
-  .section-head .zh { color: var(--muted); font-size: 0.95rem; margin-bottom: 6px; }
-  .section-head p { color: var(--muted); font-size: 1.02rem; }
-
-  /* ===== Features ===== */
-  .features-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px;
-  }
-  .feature {
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 28px 26px;
-  }
-  .feature .icon {
-    width: 44px; height: 44px; border-radius: 10px; margin-bottom: 18px;
-    background: linear-gradient(135deg, rgba(79,124,255,0.12), rgba(139,92,246,0.12));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
-  }
-  .feature h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-  .feature p { color: var(--muted); font-size: 0.92rem; }
-
-  /* ===== Pricing ===== */
-  #pricing { background: #fff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .pricing-note {
-    text-align: center; max-width: 560px; margin: -32px auto 44px;
-    color: var(--muted); font-size: 0.9rem;
-    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 10px 18px;
-  }
-  .pricing-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px;
-    max-width: 960px; margin: 0 auto;
-  }
-  .plan {
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 32px 28px; display: flex; flex-direction: column; position: relative;
-  }
-  .plan.popular { border: 2px solid var(--accent); box-shadow: 0 12px 36px rgba(79,124,255,0.13); }
-  .plan .tag {
-    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
-    background: var(--accent); color: #fff; font-size: 0.72rem; font-weight: 700;
-    padding: 4px 14px; border-radius: 999px; letter-spacing: 0.5px; text-transform: uppercase;
-  }
-  .plan h3 { font-size: 1.05rem; font-weight: 700; }
-  .plan .price { font-size: 2.5rem; font-weight: 800; margin: 10px 0 2px; letter-spacing: -1px; }
-  .plan .price small { font-size: 0.95rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
-  .plan .credit-line { color: var(--accent); font-weight: 600; font-size: 0.92rem; margin-bottom: 18px; }
-  .plan ul { list-style: none; margin-bottom: 26px; flex: 1; }
-  .plan ul li {
-    padding: 7px 0 7px 26px; font-size: 0.92rem; color: var(--text); position: relative;
-  }
-  .plan ul li::before {
-    content: "✓"; position: absolute; left: 2px; color: var(--accent); font-weight: 700;
-  }
-  .plan .btn { text-align: center; width: 100%; }
-  .plan .btn-outline {
-    border: 1px solid var(--accent); color: var(--accent);
-  }
-  .plan .btn-outline:hover { background: rgba(79,124,255,0.07); }
-
-  /* ===== FAQ ===== */
-  .faq-list { max-width: 760px; margin: 0 auto; }
-  .faq-item {
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-    margin-bottom: 12px; overflow: hidden;
-  }
-  .faq-item summary {
-    cursor: pointer; padding: 18px 22px; font-weight: 600; font-size: 0.98rem;
-    list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  }
-  .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary::after { content: "+"; color: var(--muted); font-size: 1.3rem; font-weight: 400; flex-shrink: 0; }
-  .faq-item[open] summary::after { content: "–"; }
-  .faq-item .answer { padding: 0 22px 18px; color: var(--muted); font-size: 0.93rem; }
-
-  /* ===== CTA strip ===== */
-  .cta-strip {
-    background: var(--dark); color: #fff; text-align: center; padding: 70px 24px;
-  }
-  .cta-strip h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.3px; }
-  .cta-strip p { color: var(--muted-light); margin-bottom: 28px; }
-
-  /* ===== Footer ===== */
-  footer {
-    background: var(--dark-2); color: var(--muted-light);
-    padding: 48px 24px 36px; font-size: 0.88rem;
-  }
-  .footer-inner { max-width: 1080px; margin: 0 auto; }
-  .footer-top {
-    display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap;
-    padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 24px;
-  }
-  .footer-brand { max-width: 320px; }
-  .footer-brand .logo { margin-bottom: 12px; }
-  footer h4 { color: #fff; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
-  footer ul { list-style: none; }
-  footer ul li { margin-bottom: 8px; }
-  footer a { color: var(--muted-light); }
-  footer a:hover { color: #fff; }
-  .footer-bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 0.8rem; color: #6e7c97; }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-inner">
-    <a href="#" class="logo"><span class="logo-mark">Z</span>ZenRouter</a>
+  <div class="wrap nav-inner">
+    <a class="logo" href="index.html"><span class="logo-mark">Z</span>ZenRouter</a>
     <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
-      <a href="#pricing" class="nav-cta">Get Started</a>
+      <a href="docs.html">Docs</a>
+      <a href="#pricing" class="hide-m">Pricing</a>
+      <a href="#faq" class="hide-m">FAQ</a>
+      <a href="https://api.zenrouter.io" class="hide-m">Dashboard</a>
+      <a href="https://api.zenrouter.io" class="btn btn-primary">Sign in</a>
     </div>
   </div>
 </nav>
 
 <header class="hero">
-  <span class="badge">OpenAI-compatible · Pay as you go</span>
-  <h1>One API for every major <span>LLM</span></h1>
-  <p class="sub-zh">一个接口，聚合所有主流大模型</p>
-  <p class="lead">
-    ZenRouter gives developers a single, OpenAI-compatible endpoint to access
-    leading large language models — with smart routing, transparent usage-based billing,
-    and enterprise-grade reliability.
-  </p>
-  <div class="hero-actions">
-    <a class="btn btn-primary" href="#pricing">Buy API Credits</a>
-    <a class="btn btn-ghost" href="#features">Explore Features</a>
-  </div>
-
-  <div class="hero-code">
-    <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-    <pre><span class="c-grey"># Works with any OpenAI SDK — just change the base URL</span>
+  <div class="wrap">
+    <h1>One API key.<br><em>Every top model.</em></h1>
+    <p class="sub">An OpenAI-compatible gateway to GPT, Claude, Gemini and leading open-weight models — with usage-based prepaid credits and automatic provider failover.</p>
+    <p class="sub-zh">一个 API Key，稳定接入所有主流大模型 · OpenAI 兼容 · 按量计费，预付积分，非订阅</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="https://api.zenrouter.io">Get API Key →</a>
+      <a class="btn btn-ghost" href="docs.html">Read the Docs</a>
+    </div>
+    <div class="code-card">
+<pre><span class="c"># Point any OpenAI-compatible client at ZenRouter</span>
 curl https://api.zenrouter.io/v1/chat/completions \
-  -H <span class="c-green">"Authorization: Bearer $NEXUS_API_KEY"</span> \
-  -d <span class="c-green">'{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'</span></pre>
+  -H <span class="g">"Authorization: Bearer $ZENROUTER_API_KEY"</span> \
+  -H <span class="g">"Content-Type: application/json"</span> \
+  -d <span class="b">'{"model":"claude-sonnet-4-6","messages":[{"role":"user","content":"Hello"}]}'</span></pre>
+    </div>
   </div>
 </header>
 
-<section id="features">
-  <div class="container">
-    <div class="section-head">
-      <h2>Everything you need to ship AI features</h2>
-      <p class="zh">为生产环境而生的 LLM 网关</p>
-      <p>A production-ready gateway layer between your application and the model providers.</p>
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Up and running in two minutes</h2>
+      <p>Works with the tools you already use — just change the base URL. 两分钟接入，只需替换 base URL。</p>
     </div>
-    <div class="features-grid">
-      <div class="feature">
-        <div class="icon">⚡</div>
-        <h3>OpenAI-Compatible API</h3>
-        <p>Drop-in replacement for the OpenAI API. Keep your existing SDKs, libraries, and tooling — just point them at our endpoint and you are live in minutes.</p>
+    <div class="tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="cc">Claude Code</button>
+        <button class="tab-btn" data-tab="codex">Codex CLI</button>
+        <button class="tab-btn" data-tab="py">OpenAI SDK</button>
+        <button class="tab-btn" data-tab="curl">cURL</button>
       </div>
-      <div class="feature">
-        <div class="icon">🔀</div>
-        <h3>Multi-Model Routing</h3>
-        <p>Access GPT, Claude, Gemini, DeepSeek and more behind one unified interface. Switch models per request, with automatic failover when a provider is degraded.</p>
+      <div class="tab-panel active" id="tab-cc">
+        <div class="code-card">
+<pre><span class="c"># ~/.zshrc or ~/.bashrc</span>
+export ANTHROPIC_BASE_URL=<span class="g">https://api.zenrouter.io</span>
+export ANTHROPIC_AUTH_TOKEN=<span class="g">your-zenrouter-key</span>
+
+claude   <span class="c"># start Claude Code as usual</span></pre>
+        </div>
+        <ol class="steps">
+          <li>Create an API key in your <a href="https://api.zenrouter.io">dashboard</a></li>
+          <li>Export the two environment variables above</li>
+          <li>Launch Claude Code — requests now route through ZenRouter</li>
+        </ol>
       </div>
-      <div class="feature">
-        <div class="icon">📊</div>
-        <h3>Usage-Based Billing</h3>
-        <p>Buy credits once, spend them per token. Real-time usage dashboards, per-key spend limits, and detailed request logs. No subscriptions, no surprises.</p>
+      <div class="tab-panel" id="tab-codex">
+        <div class="code-card">
+<pre><span class="c"># ~/.codex/config.toml</span>
+[model_providers.zenrouter]
+name = <span class="g">"ZenRouter"</span>
+base_url = <span class="g">"https://api.zenrouter.io/v1"</span>
+env_key = <span class="g">"ZENROUTER_API_KEY"</span></pre>
+        </div>
+        <ol class="steps">
+          <li>Add the provider block to your Codex config</li>
+          <li>Run <code>export ZENROUTER_API_KEY=your-key</code></li>
+          <li>Select the provider and start coding</li>
+        </ol>
       </div>
-      <div class="feature">
-        <div class="icon">🛡️</div>
-        <h3>99.9% Uptime</h3>
-        <p>Multi-region infrastructure with automatic retries and provider failover. Public status page and an uptime commitment you can build a business on.</p>
+      <div class="tab-panel" id="tab-py">
+        <div class="code-card">
+<pre><span class="c"># pip install openai</span>
+from openai import OpenAI
+
+client = OpenAI(
+    base_url=<span class="g">"https://api.zenrouter.io/v1"</span>,
+    api_key=<span class="g">"your-zenrouter-key"</span>,
+)
+resp = client.chat.completions.create(
+    model=<span class="b">"gpt-5.5"</span>,
+    messages=[{<span class="g">"role"</span>: <span class="g">"user"</span>, <span class="g">"content"</span>: <span class="g">"Hello"</span>}],
+)</pre>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-curl">
+        <div class="code-card">
+<pre>curl https://api.zenrouter.io/v1/chat/completions \
+  -H <span class="g">"Authorization: Bearer $ZENROUTER_API_KEY"</span> \
+  -H <span class="g">"Content-Type: application/json"</span> \
+  -d <span class="b">'{"model":"deepseek-chat","messages":[{"role":"user","content":"你好"}]}'</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>The models you actually want</h2>
+      <p>One balance, every provider. 一个余额，所有主流模型系列。</p>
+    </div>
+    <div class="model-grid">
+      <div class="model-chip">GPT series<small>OpenAI</small></div>
+      <div class="model-chip">Claude Opus · Sonnet<small>Anthropic</small></div>
+      <div class="model-chip">Gemini<small>Google</small></div>
+      <div class="model-chip">DeepSeek<small>DeepSeek</small></div>
+      <div class="model-chip">Qwen<small>Alibaba</small></div>
+      <div class="model-chip">Llama<small>Meta</small></div>
+      <div class="model-chip">Kimi<small>Moonshot</small></div>
+      <div class="model-chip">GLM<small>Zhipu</small></div>
+    </div>
+    <p class="model-note">The live model list and per-token rates are published in your dashboard after sign-in.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Why ZenRouter</h2>
+      <p>Calm infrastructure for busy builders. 简单、稳定、可预期。</p>
+    </div>
+    <div class="grid-4">
+      <div class="card"><span class="ico">⚷</span>
+        <h3>One key, all models</h3>
+        <p>Stop juggling provider accounts. A single key and a single balance cover every model we route.</p>
+      </div>
+      <div class="card"><span class="ico">⇄</span>
+        <h3>OpenAI-compatible</h3>
+        <p>Drop-in replacement for the OpenAI API. Your existing SDKs, agents and tools work unchanged.</p>
+      </div>
+      <div class="card"><span class="ico">◔</span>
+        <h3>Pay for usage only</h3>
+        <p>Prepaid usage credits, metered per token. No subscription, no minimum spend, no auto-renewal — ever.</p>
+      </div>
+      <div class="card"><span class="ico">☁</span>
+        <h3>Multi-provider failover</h3>
+        <p>Requests route across redundant upstream channels with automatic failover. We target 99.9% uptime.</p>
       </div>
     </div>
   </div>
 </section>
 
 <section id="pricing">
-  <div class="container">
-    <div class="section-head">
-      <h2>Simple, transparent pricing</h2>
-      <p class="zh">按量计费 · 一次性充值，非订阅</p>
-      <p>Purchase API credits as a <strong>one-time top-up</strong>. Credits are consumed per request based on token usage. This is <strong>not a subscription</strong> — no recurring charges, ever.</p>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Simple, prepaid pricing</h2>
+      <p>Prepaid usage credits for the ZenRouter service · No subscription · 预付积分 · 非订阅</p>
     </div>
-    <div class="pricing-grid">
-      <div class="plan">
+    <p class="price-note">Buy credits once and spend them per token at the per-model rates shown in your dashboard. Purchases are one-time — you are never charged automatically.</p>
+    <div class="grid-3">
+      <div class="tier">
         <h3>Starter</h3>
         <div class="price">$10 <small>one-time</small></div>
-        <div class="credit-line">$10 in API credits</div>
         <ul>
-          <li>Full access to all supported models</li>
-          <li>OpenAI-compatible endpoint</li>
-          <li>Usage dashboard &amp; request logs</li>
-          <li>Community support</li>
-          <li>Credits never auto-renew</li>
+          <li>$10 in API credits</li>
+          <li>All models included</li>
+          <li>Usage logs &amp; spend limits</li>
         </ul>
-        <a class="btn btn-outline" href="#">Top Up $10</a>
+        <a class="btn btn-ghost" href="https://api.zenrouter.io">Get started</a>
       </div>
-      <div class="plan popular">
-        <span class="tag">Most Popular</span>
+      <div class="tier hot">
+        <span class="tag">Most popular</span>
         <h3>Pro</h3>
         <div class="price">$30 <small>one-time</small></div>
-        <div class="credit-line">$30 in API credits</div>
         <ul>
-          <li>Everything in Starter</li>
-          <li>Higher rate limits</li>
-          <li>Priority routing during peak hours</li>
-          <li>Email support</li>
-          <li>Credits never auto-renew</li>
+          <li>$30 in API credits</li>
+          <li>All models included</li>
+          <li>Priority support</li>
         </ul>
-        <a class="btn btn-primary" href="#">Top Up $30</a>
+        <a class="btn btn-primary" href="https://api.zenrouter.io">Get started</a>
       </div>
-      <div class="plan">
+      <div class="tier">
         <h3>Business</h3>
         <div class="price">$100 <small>one-time</small></div>
-        <div class="credit-line">$100 in API credits</div>
         <ul>
-          <li>Everything in Pro</li>
-          <li>Highest rate limits</li>
-          <li>Multiple API keys with spend limits</li>
-          <li>Priority email support</li>
-          <li>Credits never auto-renew</li>
+          <li>$100 in API credits</li>
+          <li>All models included</li>
+          <li>Invoice on request</li>
         </ul>
-        <a class="btn btn-outline" href="#">Top Up $100</a>
+        <a class="btn btn-ghost" href="https://api.zenrouter.io">Get started</a>
       </div>
     </div>
+    <p class="model-note" style="margin-top:26px">Sign in to the dashboard to complete your purchase. 注册登录后在控制台完成购买。</p>
   </div>
 </section>
 
 <section id="faq">
-  <div class="container">
-    <div class="section-head">
-      <h2>Frequently Asked Questions</h2>
-      <p class="zh">常见问题</p>
-    </div>
-    <div class="faq-list">
-      <details class="faq-item">
-        <summary>What exactly am I purchasing?</summary>
-        <div class="answer">You are purchasing prepaid API credits for the ZenRouter service. Credits are added to your account balance immediately after payment and are consumed as you make API requests, priced per token according to the model used. Each purchase is a one-time top-up — there is no subscription and no automatic recurring charge.</div>
+  <div class="wrap">
+    <div class="sec-head"><h2>Frequently asked questions</h2></div>
+    <div class="faq">
+      <details open>
+        <summary>What exactly am I buying?</summary>
+        <p>Prepaid API credits for the ZenRouter service. Credits are added to your account immediately after payment and are consumed as you make API requests, priced per token by model. Each purchase is one-time — there is no subscription and no recurring charge.</p>
       </details>
-      <details class="faq-item">
-        <summary>What is your refund policy?</summary>
-        <div class="answer">We offer a <strong>7-day refund for unused credits</strong>. If you are not satisfied, contact us within 7 days of purchase and we will refund the unused portion of your credit balance to your original payment method. Credits that have already been consumed by API usage are non-refundable. See our full <a href="refund.html">Refund Policy</a> for details.</div>
+      <details>
+        <summary>Is this a subscription?</summary>
+        <p>No. You are never charged automatically. When your balance runs low you can choose to buy more credits — entirely at your discretion.</p>
       </details>
-      <details class="faq-item">
-        <summary>Is this a subscription? Will I be charged again?</summary>
-        <div class="answer">No. All purchases are one-time top-ups. You will never be charged automatically. When your balance runs low, you can choose to top up again manually — entirely at your discretion.</div>
+      <details>
+        <summary>What is the refund policy?</summary>
+        <p>We offer a 7-day refund for unused credits. See the full <a href="refund.html">Refund Policy</a> for details.</p>
       </details>
-      <details class="faq-item">
+      <details>
         <summary>Do credits expire?</summary>
-        <div class="answer">Credits remain valid for 12 months from the date of purchase. We will notify you by email before any credits are due to expire.</div>
+        <p>Credits remain valid for 12 months from the date of purchase. We notify you by email before any credits are due to expire.</p>
       </details>
-      <details class="faq-item">
-        <summary>Which models are supported?</summary>
-        <div class="answer">We aggregate leading large language models from multiple providers behind a single OpenAI-compatible API, including GPT-series, Claude-series, Gemini-series and popular open-weight models. The current model list and per-token pricing are published in your account dashboard.</div>
+      <details>
+        <summary>Which models are available?</summary>
+        <p>We aggregate leading models from multiple providers behind one OpenAI-compatible API — GPT-series, Claude-series, Gemini-series and popular open-weight models. The live list and per-token rates are in your dashboard.</p>
       </details>
-      <details class="faq-item">
-        <summary>How is usage calculated?</summary>
-        <div class="answer">Usage is metered per request based on input and output tokens, at the per-model rates shown in your dashboard. Every request is itemized in your usage logs, so you can audit exactly where your credits go.</div>
-      </details>
-      <details class="faq-item">
-        <summary>How do I get support?</summary>
-        <div class="answer">Email us at <a href="mailto:support@zenrouter.io">support@zenrouter.io</a>. We respond to all billing and refund inquiries within 2 business days.</div>
+      <details>
+        <summary>How do I get help?</summary>
+        <p>Email <a href="mailto:support@zenrouter.io">support@zenrouter.io</a>. We respond to all billing and refund inquiries within 2 business days.</p>
       </details>
     </div>
   </div>
 </section>
 
-<div class="cta-strip">
-  <h2>Start building in minutes</h2>
-  <p>Top up once, call any model. No subscription required.</p>
-  <a class="btn btn-primary" href="#pricing">Buy API Credits</a>
-</div>
-
 <footer>
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="#" class="logo"><span class="logo-mark">Z</span>ZenRouter</a>
-        <p>A unified, OpenAI-compatible gateway for large language models. Usage-based billing with one-time credit top-ups.</p>
-      </div>
-      <div>
-        <h4>Product</h4>
-        <ul>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Legal</h4>
-        <ul>
-          <li><a href="terms.html">Terms of Service</a></li>
-          <li><a href="privacy.html">Privacy Policy</a></li>
-          <li><a href="refund.html">Refund Policy</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <ul>
-          <li><a href="mailto:support@zenrouter.io">support@zenrouter.io</a></li>
-        </ul>
-      </div>
+  <div class="wrap foot-inner">
+    <a class="logo" href="index.html"><span class="logo-mark">Z</span>ZenRouter</a>
+    <div class="foot-links">
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="refund.html">Refund Policy</a>
+      <a href="mailto:support@zenrouter.io">support@zenrouter.io</a>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 ZenRouter. All rights reserved.</span>
-      <span>ZenRouter is operated by ZenRouter.</span>
-    </div>
+    <span>© 2026 ZenRouter. All rights reserved.</span>
   </div>
 </footer>
 
+<script>
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
 </body>
 </html>
