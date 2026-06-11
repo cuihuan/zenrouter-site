@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="ZenRouter — one OpenAI-compatible API key for every top LLM. Usage-based prepaid credits, multi-provider failover, no subscription.">
-<title>ZenRouter — One API Key. Every Top Model.</title>
+<meta name="description" content="ZenRouter — 为 Claude Code 与 Codex 打造的 LLM 网关。一个 API Key 接入全球顶级模型，OpenAI 兼容，按量计费，价格透明。">
+<title>ZenRouter — 为 Claude Code 与 Codex 打造的 LLM 网关</title>
 <style>
   :root{
     --paper:#FAFAF7; --ink:#1C1C1A; --muted:#6B6B66; --line:#E7E5E0;
     --accent:#4F46E5; --accent-soft:#EEF0FE; --card:#FFFFFF; --code-bg:#16161A; --code-ink:#E6E6EB;
+    --ok:#0F766E; --warn:#B45309;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -21,7 +22,7 @@
   .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
   .logo-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-size:16px}
-  .nav-links{display:flex;align-items:center;gap:26px;font-size:14.5px;color:var(--muted)}
+  .nav-links{display:flex;align-items:center;gap:24px;font-size:14.5px;color:var(--muted)}
   .nav-links a:hover{color:var(--ink)}
   .btn{display:inline-block;padding:9px 18px;border-radius:10px;font-size:14.5px;font-weight:600;transition:.15s}
   .btn-primary{background:var(--accent);color:#fff}
@@ -29,55 +30,62 @@
   .btn-ghost{border:1px solid var(--line);background:var(--card)}
   .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
   /* hero */
-  header.hero{padding:88px 0 64px;text-align:center}
-  .hero h1{font-size:clamp(32px,5vw,52px);line-height:1.15;letter-spacing:-.02em;font-weight:800}
+  header.hero{padding:80px 0 56px;text-align:center}
+  .hero h1{font-size:clamp(30px,4.6vw,46px);line-height:1.2;letter-spacing:-.02em;font-weight:800}
   .hero h1 em{color:var(--accent);font-style:normal}
-  .hero .sub{margin:18px auto 8px;max-width:640px;font-size:18px;color:var(--muted)}
-  .hero .sub-zh{font-size:15px;color:var(--muted);opacity:.85}
-  .hero-cta{margin:30px 0 44px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-  .code-card{max-width:680px;margin:0 auto;text-align:left;background:var(--code-bg);color:var(--code-ink);
-    border-radius:14px;padding:22px 24px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    font-size:13.5px;line-height:1.7;overflow-x:auto;box-shadow:0 12px 40px rgba(28,28,26,.12)}
-  .code-card .c{color:#8B8B95}.code-card .g{color:#7EE787}.code-card .b{color:#79C0FF}
+  .hero .sub{margin:18px auto 6px;max-width:620px;font-size:18px;color:var(--muted)}
+  .hero .sub-en{font-size:14px;color:var(--muted);opacity:.8}
+  .hero-cta{margin:28px 0 0;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
   /* sections */
-  section{padding:64px 0;border-top:1px solid var(--line)}
-  .sec-head{text-align:center;margin-bottom:40px}
-  .sec-head h2{font-size:30px;letter-spacing:-.01em}
-  .sec-head p{color:var(--muted);margin-top:8px}
-  /* tabs */
-  .tabs{max-width:760px;margin:0 auto}
-  .tab-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}
-  .tab-btn{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:14px;cursor:pointer;color:var(--muted)}
+  section{padding:60px 0;border-top:1px solid var(--line)}
+  .sec-head{text-align:center;margin-bottom:36px}
+  .sec-head h2{font-size:28px;letter-spacing:-.01em}
+  .sec-head p{color:var(--muted);margin-top:8px;font-size:15px}
+  /* product tabs */
+  .tabs{max-width:780px;margin:0 auto}
+  .tab-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:22px}
+  .tab-btn{padding:9px 18px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:14px;cursor:pointer;color:var(--muted)}
   .tab-btn.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
   .tab-panel{display:none}
   .tab-panel.active{display:block}
-  .steps{margin-top:14px;color:var(--muted);font-size:14px;padding-left:20px}
-  .steps li{margin:4px 0}
-  .steps a{color:var(--accent)}
-  /* models */
-  .model-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:820px;margin:0 auto}
-  .model-chip{padding:10px 20px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:14.5px;font-weight:600}
-  .model-chip small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
-  .model-note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:22px}
-  /* features */
-  .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px}
-  .card .ico{display:inline-flex;width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
-    align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
-  .card h3{font-size:17px;margin-bottom:8px}
-  .card p{font-size:14px;color:var(--muted)}
-  /* pricing */
-  .price-note{text-align:center;max-width:560px;margin:0 auto 36px;color:var(--muted);font-size:14.5px}
+  .step{display:flex;gap:14px;margin:18px 0;align-items:flex-start}
+  .step-num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;
+    display:inline-flex;align-items:center;justify-content:center;margin-top:2px}
+  .step h4{font-size:15.5px;margin-bottom:4px}
+  .step p{font-size:14px;color:var(--muted)}
+  .step a{color:var(--accent)}
+  .code-card{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:16px 18px;margin:10px 0 0;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.7;overflow-x:auto}
+  .code-card .c{color:#8B8B95}.code-card .g{color:#7EE787}.code-card .b{color:#79C0FF}
+  /* billing */
+  .bill-tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0 26px}
+  .bill-tag{padding:7px 16px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:13.5px;font-weight:600}
+  .price-note{text-align:center;max-width:600px;margin:0 auto 34px;color:var(--muted);font-size:14.5px}
   .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;max-width:860px;margin:0 auto}
   .tier{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px;text-align:center;position:relative}
   .tier.hot{border-color:var(--accent);box-shadow:0 8px 28px rgba(79,70,229,.10)}
   .tier .tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;
     font-size:12px;font-weight:600;padding:3px 12px;border-radius:99px}
   .tier h3{font-size:16px;color:var(--muted);font-weight:600}
-  .tier .price{font-size:40px;font-weight:800;margin:10px 0 2px}
+  .tier .price{font-size:38px;font-weight:800;margin:10px 0 2px}
   .tier .price small{font-size:14px;color:var(--muted);font-weight:400}
-  .tier ul{list-style:none;margin:18px 0 22px;font-size:14px;color:var(--muted)}
-  .tier ul li{padding:5px 0}
+  .tier ul{list-style:none;margin:16px 0 20px;font-size:14px;color:var(--muted)}
+  .tier ul li{padding:4px 0}
+  /* compare table */
+  .cmp{max-width:820px;margin:0 auto;overflow-x:auto}
+  .cmp table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);border-radius:14px;overflow:hidden}
+  .cmp th,.cmp td{border:1px solid var(--line);padding:12px 16px;text-align:left}
+  .cmp th{background:var(--accent-soft);font-size:14px}
+  .cmp th:first-child{background:var(--card)}
+  .cmp td.y{color:var(--ok);font-weight:600}
+  .cmp td.n{color:var(--warn)}
+  /* models */
+  .model-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:820px;margin:0 auto}
+  .model-chip{padding:10px 20px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:14.5px;font-weight:600}
+  .model-chip small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+  .strip{margin:30px auto 0;max-width:680px;text-align:center;background:var(--accent-soft);border:1px solid #D8DCFB;
+    border-radius:12px;padding:14px 20px;font-size:14px;color:#3A3A56}
+  .strip a{color:var(--accent);font-weight:600}
   /* faq */
   .faq{max-width:720px;margin:0 auto}
   .faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:12px}
@@ -87,11 +95,12 @@
   /* footer */
   footer{border-top:1px solid var(--line);padding:44px 0;color:var(--muted);font-size:14px}
   .foot-inner{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
-  .foot-links{display:flex;gap:20px}
+  .foot-brand p{margin-top:6px;font-size:13px}
+  .foot-links{display:flex;gap:20px;flex-wrap:wrap}
   .foot-links a:hover{color:var(--ink)}
-  @media (max-width:720px){
-    .nav-links{gap:14px}.nav-links .hide-m{display:none}
-    header.hero{padding:56px 0 44px}
+  @media (max-width:760px){
+    .nav-links{gap:12px}.nav-links .hide-m{display:none}
+    header.hero{padding:52px 0 40px}
   }
 </style>
 </head>
@@ -101,144 +110,134 @@
   <div class="wrap nav-inner">
     <a class="logo" href="index.html"><span class="logo-mark">Z</span>ZenRouter</a>
     <div class="nav-links">
-      <a href="docs.html">Docs</a>
-      <a href="#pricing" class="hide-m">Pricing</a>
-      <a href="#faq" class="hide-m">FAQ</a>
-      <a href="https://api.zenrouter.io" class="hide-m">Dashboard</a>
-      <a href="https://api.zenrouter.io" class="btn btn-primary">Sign in</a>
+      <a href="https://api.zenrouter.io/pricing" class="hide-m">实时价格</a>
+      <a href="docs.html">文档</a>
+      <a href="https://api.zenrouter.io" class="hide-m">邀请返利</a>
+      <a href="https://api.zenrouter.io" class="hide-m">控制台</a>
+      <a href="https://api.zenrouter.io" class="btn btn-primary">登录</a>
     </div>
   </div>
 </nav>
 
 <header class="hero">
   <div class="wrap">
-    <h1>One API key.<br><em>Every top model.</em></h1>
-    <p class="sub">An OpenAI-compatible gateway to GPT, Claude, Gemini and leading open-weight models — with usage-based prepaid credits and automatic provider failover.</p>
-    <p class="sub-zh">一个 API Key，稳定接入所有主流大模型 · OpenAI 兼容 · 按量计费，预付积分，非订阅</p>
+    <h1>为你的 Claude Code 与 Codex<br>打造的 <em>LLM 网关</em></h1>
+    <p class="sub">一个 API Key，接入全球顶级大模型 · OpenAI 兼容 · 按量计费，价格透明</p>
+    <p class="sub-en">One key to every top model. Usage-based, transparent pricing.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="https://api.zenrouter.io">Get API Key →</a>
-      <a class="btn btn-ghost" href="docs.html">Read the Docs</a>
-    </div>
-    <div class="code-card">
-<pre><span class="c"># Point any OpenAI-compatible client at ZenRouter</span>
-curl https://api.zenrouter.io/v1/chat/completions \
-  -H <span class="g">"Authorization: Bearer $ZENROUTER_API_KEY"</span> \
-  -H <span class="g">"Content-Type: application/json"</span> \
-  -d <span class="b">'{"model":"claude-sonnet-4-6","messages":[{"role":"user","content":"Hello"}]}'</span></pre>
+      <a class="btn btn-primary" href="https://api.zenrouter.io">获取 API Key →</a>
+      <a class="btn btn-ghost" href="https://api.zenrouter.io/pricing">查看实时价格</a>
     </div>
   </div>
 </header>
 
-<section>
+<section id="setup">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Up and running in two minutes</h2>
-      <p>Works with the tools you already use — just change the base URL. 两分钟接入，只需替换 base URL。</p>
+      <h2>选择你的工具，三步接入</h2>
+      <p>主流 AI 编程工具开箱即用，只需替换 base URL</p>
     </div>
     <div class="tabs">
       <div class="tab-bar">
-        <button class="tab-btn active" data-tab="cc">Claude Code</button>
-        <button class="tab-btn" data-tab="codex">Codex CLI</button>
-        <button class="tab-btn" data-tab="py">OpenAI SDK</button>
-        <button class="tab-btn" data-tab="curl">cURL</button>
+        <button class="tab-btn active" data-tab="cc">Claude Code 终端</button>
+        <button class="tab-btn" data-tab="codexcli">Codex 终端</button>
+        <button class="tab-btn" data-tab="codexapp">Codex 桌面版</button>
+        <button class="tab-btn" data-tab="sdk">OpenAI SDK</button>
+        <button class="tab-btn" data-tab="other">其他工具</button>
       </div>
-      <div class="tab-panel active" id="tab-cc">
-        <div class="code-card">
-<pre><span class="c"># ~/.zshrc or ~/.bashrc</span>
-export ANTHROPIC_BASE_URL=<span class="g">https://api.zenrouter.io</span>
-export ANTHROPIC_AUTH_TOKEN=<span class="g">your-zenrouter-key</span>
 
-claude   <span class="c"># start Claude Code as usual</span></pre>
-        </div>
-        <ol class="steps">
-          <li>Create an API key in your <a href="https://api.zenrouter.io">dashboard</a></li>
-          <li>Export the two environment variables above</li>
-          <li>Launch Claude Code — requests now route through ZenRouter</li>
-        </ol>
+      <div class="tab-panel active" id="tab-cc">
+        <div class="step"><span class="step-num">1</span><div>
+          <h4>前置准备</h4>
+          <p><a href="https://api.zenrouter.io">注册账号</a> → 在控制台购买额度 → 在「API 令牌」页创建你的 Key</p>
+        </div></div>
+        <div class="step"><span class="step-num">2</span><div>
+          <h4>写入两行配置</h4>
+          <div class="code-card">
+<pre><span class="c"># 加入 ~/.zshrc 或 ~/.bashrc 后重开终端</span>
+export ANTHROPIC_BASE_URL=<span class="g">https://api.zenrouter.io</span>
+export ANTHROPIC_AUTH_TOKEN=<span class="g">你的-zenrouter-key</span></pre>
+          </div>
+        </div></div>
+        <div class="step"><span class="step-num">3</span><div>
+          <h4>启动验证</h4>
+          <p>正常运行 <code>claude</code>，所有请求自动经由 ZenRouter 路由计费。详见<a href="docs.html#claude-code">文档</a></p>
+        </div></div>
       </div>
-      <div class="tab-panel" id="tab-codex">
-        <div class="code-card">
+
+      <div class="tab-panel" id="tab-codexcli">
+        <div class="step"><span class="step-num">1</span><div>
+          <h4>前置准备</h4>
+          <p><a href="https://api.zenrouter.io">注册账号</a> → 购买额度 → 创建 API Key</p>
+        </div></div>
+        <div class="step"><span class="step-num">2</span><div>
+          <h4>添加 provider 配置</h4>
+          <div class="code-card">
 <pre><span class="c"># ~/.codex/config.toml</span>
+model_provider = <span class="g">"zenrouter"</span>
+
 [model_providers.zenrouter]
 name = <span class="g">"ZenRouter"</span>
 base_url = <span class="g">"https://api.zenrouter.io/v1"</span>
 env_key = <span class="g">"ZENROUTER_API_KEY"</span></pre>
-        </div>
-        <ol class="steps">
-          <li>Add the provider block to your Codex config</li>
-          <li>Run <code>export ZENROUTER_API_KEY=your-key</code></li>
-          <li>Select the provider and start coding</li>
-        </ol>
+          </div>
+        </div></div>
+        <div class="step"><span class="step-num">3</span><div>
+          <h4>启动验证</h4>
+          <p><code>export ZENROUTER_API_KEY=你的key</code> 后运行 <code>codex</code>。详见<a href="docs.html#codex">文档</a></p>
+        </div></div>
       </div>
-      <div class="tab-panel" id="tab-py">
-        <div class="code-card">
+
+      <div class="tab-panel" id="tab-codexapp">
+        <div class="step"><span class="step-num">1</span><div>
+          <h4>前置准备</h4>
+          <p>安装 Codex 桌面版 → <a href="https://api.zenrouter.io">注册 ZenRouter</a> 并购买额度、创建 Key</p>
+        </div></div>
+        <div class="step"><span class="step-num">2</span><div>
+          <h4>在设置中指向 ZenRouter</h4>
+          <p>打开应用设置 → 模型服务商 → 自定义，填入 <code>https://api.zenrouter.io/v1</code> 与你的 Key</p>
+        </div></div>
+        <div class="step"><span class="step-num">3</span><div>
+          <h4>启动验证</h4>
+          <p>新建对话发送一条消息，控制台「日志」页能看到这条请求即接入成功</p>
+        </div></div>
+      </div>
+
+      <div class="tab-panel" id="tab-sdk">
+        <div class="step"><span class="step-num">1</span><div>
+          <h4>前置准备</h4>
+          <p><a href="https://api.zenrouter.io">注册账号</a> → 购买额度 → 创建 API Key</p>
+        </div></div>
+        <div class="step"><span class="step-num">2</span><div>
+          <h4>替换 base_url</h4>
+          <div class="code-card">
 <pre><span class="c"># pip install openai</span>
 from openai import OpenAI
-
 client = OpenAI(
     base_url=<span class="g">"https://api.zenrouter.io/v1"</span>,
-    api_key=<span class="g">"your-zenrouter-key"</span>,
-)
-resp = client.chat.completions.create(
-    model=<span class="b">"gpt-5.5"</span>,
-    messages=[{<span class="g">"role"</span>: <span class="g">"user"</span>, <span class="g">"content"</span>: <span class="g">"Hello"</span>}],
+    api_key=<span class="g">"你的-zenrouter-key"</span>,
 )</pre>
-        </div>
+          </div>
+        </div></div>
+        <div class="step"><span class="step-num">3</span><div>
+          <h4>照常调用</h4>
+          <p>现有代码无需任何其他改动，模型名按控制台「模型列表」填写。详见<a href="docs.html#openai-sdk">文档</a></p>
+        </div></div>
       </div>
-      <div class="tab-panel" id="tab-curl">
-        <div class="code-card">
-<pre>curl https://api.zenrouter.io/v1/chat/completions \
-  -H <span class="g">"Authorization: Bearer $ZENROUTER_API_KEY"</span> \
-  -H <span class="g">"Content-Type: application/json"</span> \
-  -d <span class="b">'{"model":"deepseek-chat","messages":[{"role":"user","content":"你好"}]}'</span></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section>
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>The models you actually want</h2>
-      <p>One balance, every provider. 一个余额，所有主流模型系列。</p>
-    </div>
-    <div class="model-grid">
-      <div class="model-chip">GPT series<small>OpenAI</small></div>
-      <div class="model-chip">Claude Opus · Sonnet<small>Anthropic</small></div>
-      <div class="model-chip">Gemini<small>Google</small></div>
-      <div class="model-chip">DeepSeek<small>DeepSeek</small></div>
-      <div class="model-chip">Qwen<small>Alibaba</small></div>
-      <div class="model-chip">Llama<small>Meta</small></div>
-      <div class="model-chip">Kimi<small>Moonshot</small></div>
-      <div class="model-chip">GLM<small>Zhipu</small></div>
-    </div>
-    <p class="model-note">The live model list and per-token rates are published in your dashboard after sign-in.</p>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Why ZenRouter</h2>
-      <p>Calm infrastructure for busy builders. 简单、稳定、可预期。</p>
-    </div>
-    <div class="grid-4">
-      <div class="card"><span class="ico">⚷</span>
-        <h3>One key, all models</h3>
-        <p>Stop juggling provider accounts. A single key and a single balance cover every model we route.</p>
-      </div>
-      <div class="card"><span class="ico">⇄</span>
-        <h3>OpenAI-compatible</h3>
-        <p>Drop-in replacement for the OpenAI API. Your existing SDKs, agents and tools work unchanged.</p>
-      </div>
-      <div class="card"><span class="ico">◔</span>
-        <h3>Pay for usage only</h3>
-        <p>Prepaid usage credits, metered per token. No subscription, no minimum spend, no auto-renewal — ever.</p>
-      </div>
-      <div class="card"><span class="ico">☁</span>
-        <h3>Multi-provider failover</h3>
-        <p>Requests route across redundant upstream channels with automatic failover. We target 99.9% uptime.</p>
+      <div class="tab-panel" id="tab-other">
+        <div class="step"><span class="step-num">1</span><div>
+          <h4>判断兼容性</h4>
+          <p>任何支持「自定义 OpenAI 接口地址」的工具（Cherry Studio、LobeChat、NextChat、各类 Agent 框架等）都能接入</p>
+        </div></div>
+        <div class="step"><span class="step-num">2</span><div>
+          <h4>统一填法</h4>
+          <p>接口地址 <code>https://api.zenrouter.io/v1</code>，密钥填你的 ZenRouter Key</p>
+        </div></div>
+        <div class="step"><span class="step-num">3</span><div>
+          <h4>遇到问题</h4>
+          <p>查<a href="docs.html">接入文档</a>或邮件 <a href="mailto:support@zenrouter.io">support@zenrouter.io</a></p>
+        </div></div>
       </div>
     </div>
   </div>
@@ -247,74 +246,110 @@ resp = client.chat.completions.create(
 <section id="pricing">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Simple, prepaid pricing</h2>
-      <p>Prepaid usage credits for the ZenRouter service · No subscription · 预付积分 · 非订阅</p>
+      <h2>按量付费，用多少付多少</h2>
+      <p>Pay as you go · 预付额度按 token 扣费</p>
     </div>
-    <p class="price-note">Buy credits once and spend them per token at the per-model rates shown in your dashboard. Purchases are one-time — you are never charged automatically.</p>
+    <div class="bill-tags">
+      <span class="bill-tag">价格透明</span>
+      <span class="bill-tag">无月费 · 无订阅</span>
+      <span class="bill-tag">无最低消费</span>
+      <span class="bill-tag">美元计价</span>
+      <span class="bill-tag">逐请求账单可查</span>
+    </div>
+    <!-- 定价倍率确定后，可在此处加入"低至官方定价 X 折"的折扣主张 -->
+    <p class="price-note">一次性购买预付额度，按各模型实时单价逐 token 扣费，每一笔请求都在控制台留有明细账单。绝不自动扣款。</p>
     <div class="grid-3">
       <div class="tier">
         <h3>Starter</h3>
-        <div class="price">$10 <small>one-time</small></div>
-        <ul>
-          <li>$10 in API credits</li>
-          <li>All models included</li>
-          <li>Usage logs &amp; spend limits</li>
-        </ul>
-        <a class="btn btn-ghost" href="https://api.zenrouter.io">Get started</a>
+        <div class="price">$10 <small>一次性</small></div>
+        <ul><li>$10 等值 API 额度</li><li>全部模型可用</li><li>用量日志与限额</li></ul>
+        <a class="btn btn-ghost" href="https://api.zenrouter.io">购买额度</a>
       </div>
       <div class="tier hot">
-        <span class="tag">Most popular</span>
+        <span class="tag">最受欢迎</span>
         <h3>Pro</h3>
-        <div class="price">$30 <small>one-time</small></div>
-        <ul>
-          <li>$30 in API credits</li>
-          <li>All models included</li>
-          <li>Priority support</li>
-        </ul>
-        <a class="btn btn-primary" href="https://api.zenrouter.io">Get started</a>
+        <div class="price">$30 <small>一次性</small></div>
+        <ul><li>$30 等值 API 额度</li><li>全部模型可用</li><li>优先支持</li></ul>
+        <a class="btn btn-primary" href="https://api.zenrouter.io">购买额度</a>
       </div>
       <div class="tier">
         <h3>Business</h3>
-        <div class="price">$100 <small>one-time</small></div>
-        <ul>
-          <li>$100 in API credits</li>
-          <li>All models included</li>
-          <li>Invoice on request</li>
-        </ul>
-        <a class="btn btn-ghost" href="https://api.zenrouter.io">Get started</a>
+        <div class="price">$100 <small>一次性</small></div>
+        <ul><li>$100 等值 API 额度</li><li>全部模型可用</li><li>可开收据</li></ul>
+        <a class="btn btn-ghost" href="https://api.zenrouter.io">购买额度</a>
       </div>
     </div>
-    <p class="model-note" style="margin-top:26px">Sign in to the dashboard to complete your purchase. 注册登录后在控制台完成购买。</p>
+    <p class="price-note" style="margin-top:26px">注册登录后在控制台完成购买 · 各模型实时单价见<a href="https://api.zenrouter.io/pricing" style="color:var(--accent)">价格页</a></p>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>ZenRouter vs 普通中转站</h2>
+      <p>同样是一个 Key，底下的工程完全不同</p>
+    </div>
+    <div class="cmp">
+      <table>
+        <tr><th></th><th>ZenRouter</th><th>普通中转站</th></tr>
+        <tr><td>上游冗余</td><td class="y">多渠道自动故障转移</td><td class="n">常见单渠道，挂了就挂了</td></tr>
+        <tr><td>协议支持</td><td class="y">OpenAI + Anthropic 双协议原生支持</td><td class="n">多数仅 OpenAI 格式</td></tr>
+        <tr><td>计费透明</td><td class="y">逐请求 token 明细，账单可审计</td><td class="n">黑盒扣费居多</td></tr>
+        <tr><td>限流策略</td><td class="y">按 Key 配置限额，互不影响</td><td class="n">全局粗放限流</td></tr>
+        <tr><td>新模型上架</td><td class="y">跟随上游同步更新</td><td class="n">滞后且不稳定</td></tr>
+        <tr><td>退款保障</td><td class="y">未使用额度 7 天可退</td><td class="n">通常不退</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="models">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>模型阵容</h2>
+      <p>一个余额，覆盖全部主流系列</p>
+    </div>
+    <div class="model-grid">
+      <div class="model-chip">GPT 系列<small>OpenAI</small></div>
+      <div class="model-chip">Claude Opus · Sonnet<small>Anthropic</small></div>
+      <div class="model-chip">Gemini<small>Google</small></div>
+      <div class="model-chip">DeepSeek<small>深度求索</small></div>
+      <div class="model-chip">Qwen<small>阿里</small></div>
+      <div class="model-chip">Kimi<small>月之暗面</small></div>
+      <div class="model-chip">GLM<small>智谱</small></div>
+      <div class="model-chip">Llama<small>Meta</small></div>
+    </div>
+    <div class="strip">📊 完整模型列表与每个模型的实时单价，公开在 <a href="https://api.zenrouter.io/pricing">价格页</a>，登录后可见专属折扣</div>
   </div>
 </section>
 
 <section id="faq">
   <div class="wrap">
-    <div class="sec-head"><h2>Frequently asked questions</h2></div>
+    <div class="sec-head"><h2>常见问题</h2></div>
     <div class="faq">
       <details open>
-        <summary>What exactly am I buying?</summary>
-        <p>Prepaid API credits for the ZenRouter service. Credits are added to your account immediately after payment and are consumed as you make API requests, priced per token by model. Each purchase is one-time — there is no subscription and no recurring charge.</p>
+        <summary>我购买的是什么？</summary>
+        <p>ZenRouter 服务的预付 API 额度。支付成功后立即到账，调用 API 时按所用模型的 token 单价逐次扣减。每次购买都是一次性的——没有订阅，绝不自动续费。</p>
       </details>
       <details>
-        <summary>Is this a subscription?</summary>
-        <p>No. You are never charged automatically. When your balance runs low you can choose to buy more credits — entirely at your discretion.</p>
+        <summary>支持哪些支付方式？</summary>
+        <p>支持国际信用卡、PayPal 等方式在线支付，更多本地支付方式陆续开通中。所有支付由持牌支付平台处理，我们不接触你的卡片信息。</p>
       </details>
       <details>
-        <summary>What is the refund policy?</summary>
-        <p>We offer a 7-day refund for unused credits. See the full <a href="refund.html">Refund Policy</a> for details.</p>
+        <summary>退款政策是什么？</summary>
+        <p>未使用的额度自购买起 7 天内可退，详见<a href="refund.html">退款政策</a>。</p>
       </details>
       <details>
-        <summary>Do credits expire?</summary>
-        <p>Credits remain valid for 12 months from the date of purchase. We notify you by email before any credits are due to expire.</p>
+        <summary>额度会过期吗？</summary>
+        <p>自购买之日起 12 个月内有效，到期前我们会邮件提醒。</p>
       </details>
       <details>
-        <summary>Which models are available?</summary>
-        <p>We aggregate leading models from multiple providers behind one OpenAI-compatible API — GPT-series, Claude-series, Gemini-series and popular open-weight models. The live list and per-token rates are in your dashboard.</p>
+        <summary>和直接用官方 API 有什么区别？</summary>
+        <p>一个 Key 管理所有厂商的模型、统一余额与账单、多上游自动故障转移；接口与官方 SDK 完全兼容，迁移只需改 base URL。</p>
       </details>
       <details>
-        <summary>How do I get help?</summary>
-        <p>Email <a href="mailto:support@zenrouter.io">support@zenrouter.io</a>. We respond to all billing and refund inquiries within 2 business days.</p>
+        <summary>遇到问题怎么找到你们？</summary>
+        <p>邮件 <a href="mailto:support@zenrouter.io">support@zenrouter.io</a>，账单与退款类问题 2 个工作日内回复。</p>
       </details>
     </div>
   </div>
@@ -322,8 +357,13 @@ resp = client.chat.completions.create(
 
 <footer>
   <div class="wrap foot-inner">
-    <a class="logo" href="index.html"><span class="logo-mark">Z</span>ZenRouter</a>
+    <div class="foot-brand">
+      <a class="logo" href="index.html"><span class="logo-mark">Z</span>ZenRouter</a>
+      <p>为开发者打造的模型路由与计费层</p>
+    </div>
     <div class="foot-links">
+      <a href="docs.html">文档</a>
+      <a href="https://api.zenrouter.io/pricing">实时价格</a>
       <a href="terms.html">Terms</a>
       <a href="privacy.html">Privacy</a>
       <a href="refund.html">Refund Policy</a>
