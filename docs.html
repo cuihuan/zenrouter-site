@@ -22,8 +22,9 @@
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:var(--ink)}
   .logo-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-size:16px}
   .nav-links{display:flex;align-items:center;gap:26px;font-size:14.5px;color:var(--muted)}
-  .nav-links a{color:var(--muted)}
+  .nav-links a{color:var(--muted);white-space:nowrap}
   .nav-links a:hover{color:var(--ink)}
+  @media (max-width:760px){.nav-links{gap:12px}.nav-links .hide-m{display:none}}
   .btn{display:inline-block;padding:9px 18px;border-radius:10px;font-size:14.5px;font-weight:600;background:var(--accent);color:#fff}
   main{padding:56px 0 80px}
   h1{font-size:36px;letter-spacing:-.02em;margin-bottom:6px}
@@ -51,9 +52,9 @@
     <a class="logo" href="index.html"><span class="logo-mark">Z</span>ZenRouter</a>
     <div class="nav-links">
       <a href="index.html">首页</a>
-      <a href="https://api.zenrouter.io/pricing">实时价格</a>
-      <a href="index.html#pricing">购买额度</a>
-      <a href="https://api.zenrouter.io">控制台</a>
+      <a href="https://api.zenrouter.io/pricing" class="hide-m">实时价格</a>
+      <a href="index.html#pricing" class="hide-m">购买额度</a>
+      <a href="https://api.zenrouter.io" class="hide-m">控制台</a>
       <a href="https://api.zenrouter.io" class="btn">登录</a>
     </div>
   </div>
